@@ -1,4 +1,4 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import RoleSwitcher from "./RoleSwitcher";
 import Sidebar from "./Sidebar";
@@ -9,8 +9,12 @@ const Footer = () => (
 
 export default function Layout() {
   const { currentUser } = useApp();
+  const location = useLocation();
 
   if (!currentUser) return <Navigate to="/" replace />;
+
+  // Unique key per route + role so transitions fire on both navigation and role switch
+  const viewKey = `${currentUser.role}-${location.pathname}`;
 
   // Client portal: full-width, no sidebar
   if (currentUser.role === "client") {
@@ -18,7 +22,9 @@ export default function Layout() {
       <>
         <RoleSwitcher />
         <div className="client-portal-wrap">
-          <Outlet />
+          <div className="view-transition" key={viewKey}>
+            <Outlet />
+          </div>
           <Footer />
         </div>
       </>
@@ -31,7 +37,9 @@ export default function Layout() {
       <>
         <RoleSwitcher />
         <div className="field-portal-wrap">
-          <Outlet />
+          <div className="view-transition" key={viewKey}>
+            <Outlet />
+          </div>
         </div>
       </>
     );
@@ -43,7 +51,9 @@ export default function Layout() {
       <div className="app-layout">
         <Sidebar />
         <main className="main-content">
-          <Outlet />
+          <div className="view-transition" key={viewKey}>
+            <Outlet />
+          </div>
           <Footer />
         </main>
       </div>

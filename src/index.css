@@ -343,6 +343,7 @@ input, textarea, select {
   justify-content: center;
   background: var(--bg-primary);
   padding: 24px;
+  animation: viewFadeIn 300ms ease;
 }
 
 .login-container {
@@ -2573,14 +2574,12 @@ tr:hover td {
    GLOBAL ANIMATIONS & POLISH
    ============================================ */
 
-/* ── Page fade-in ── */
-.main-content,
-.client-content,
-.field-content {
-  animation: pageFadeIn 150ms ease;
+/* ── View transition — fires on route change and role switch ── */
+.view-transition {
+  animation: viewFadeIn 200ms ease;
 }
 
-@keyframes pageFadeIn {
+@keyframes viewFadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }

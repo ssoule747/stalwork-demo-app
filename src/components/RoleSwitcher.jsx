@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 
 function getInitials(name) {
@@ -10,8 +11,15 @@ function getInitials(name) {
 
 export default function RoleSwitcher() {
   const { currentUser, users, switchRole } = useApp();
+  const navigate = useNavigate();
 
   if (!currentUser) return null;
+
+  const handleSwitch = (userId) => {
+    if (userId === currentUser.id) return;
+    switchRole(userId);
+    navigate("/dashboard");
+  };
 
   return (
     <div className="role-switcher">
@@ -25,7 +33,7 @@ export default function RoleSwitcher() {
             <div
               key={user.id}
               className={`role-avatar ${user.id === currentUser.id ? "active" : ""}`}
-              onClick={() => switchRole(user.id)}
+              onClick={() => handleSwitch(user.id)}
               title={`${user.name} — ${user.title}`}
             >
               {getInitials(user.name)}
