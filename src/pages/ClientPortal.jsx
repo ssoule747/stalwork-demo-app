@@ -31,13 +31,15 @@ const PHASE_DATES = {
 };
 
 export default function ClientPortal() {
-  const { projects, dailyLogs, changeOrders, weeklyReports, photos, addWeeklyReport } = useApp();
+  const { projects, dailyLogs, changeOrders, weeklyReports, photos, addWeeklyReport, addChangeOrder } = useApp();
   const [tab, setTab] = useState("home");
   const [tabLoading, setTabLoading] = useState(false);
   const [lightbox, setLightbox] = useState(null);
   const [showPWA, setShowPWA] = useState(() => !localStorage.getItem("stalwork-pwa-dismissed"));
   const [generating, setGenerating] = useState(false);
   const [toast, setToast] = useState(null);
+  const [showCOForm, setShowCOForm] = useState(false);
+  const [coForm, setCOForm] = useState({ title: "", description: "", estimatedCost: "" });
 
   const switchTab = (newTab) => {
     if (newTab === tab) return;
@@ -83,6 +85,25 @@ export default function ClientPortal() {
       });
       setGenerating(false);
     }, 2200);
+  };
+
+  // Submit change order
+  const handleSubmitCO = (e) => {
+    e.preventDefault();
+    if (!coForm.title.trim()) return;
+    addChangeOrder({
+      projectId: "winkenbach",
+      title: coForm.title.trim(),
+      description: coForm.description.trim() || coForm.title.trim(),
+      requestedBy: "Laura W.",
+      date: new Date().toISOString().split("T")[0],
+      estimatedCost: coForm.estimatedCost ? parseInt(coForm.estimatedCost, 10) : 0,
+      status: "pending",
+      approvedDate: null,
+    });
+    setCOForm({ title: "", description: "", estimatedCost: "" });
+    setShowCOForm(false);
+    showToast("Change order submitted — your team has been notified");
   };
 
   // SVG progress ring values
@@ -299,6 +320,58 @@ export default function ClientPortal() {
               </div>
             </div>
 
+            {/* Quick Actions */}
+            <div className="client-actions-row">
+              <button className="client-action-card" onClick={() => setShowCOForm(true)}>
+                <div className="client-action-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <line x1="9" y1="15" x2="15" y2="15" />
+                  </svg>
+                </div>
+                <span>Submit Change Order</span>
+              </button>
+              <button className="client-action-card" onClick={() => switchTab("photos")}>
+                <div className="client-action-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                </div>
+                <span>View Photos</span>
+              </button>
+              <button className="client-action-card" onClick={() => switchTab("updates")}>
+                <div className="client-action-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
+                </div>
+                <span>Weekly Reports</span>
+              </button>
+            </div>
+
+            {/* Pending Change Orders */}
+            {myCOs.filter((co) => co.status === "pending").length > 0 && (
+              <div className="client-pending-co">
+                <h3>Pending Change Orders</h3>
+                {myCOs.filter((co) => co.status === "pending").map((co) => (
+                  <div key={co.id} className="client-co-card">
+                    <div className="client-co-info">
+                      <span className="client-co-title">{co.title}</span>
+                      <span className="client-co-meta">Submitted {co.date} {co.estimatedCost ? `· Est. ${formatCurrency(co.estimatedCost)}` : ""}</span>
+                    </div>
+                    <span className="badge badge-warning">Pending Review</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Milestone Scroller */}
             <div className="client-milestones-section">
               <h3>Build Progress</h3>
@@ -417,7 +490,7 @@ export default function ClientPortal() {
                 >
                   {photo.isNew && <span className="photo-new-badge">New</span>}
                   <img
-                    src={`https://picsum.photos/seed/sw${photo.id}/400/${photo.h}`}
+                    src={photo.url || `https://picsum.photos/seed/sw${photo.id}/400/${photo.h}`}
                     alt={photo.label}
                     loading="lazy"
                   />
@@ -435,7 +508,7 @@ export default function ClientPortal() {
                 <div className="client-lightbox-inner" onClick={(e) => e.stopPropagation()}>
                   <button className="lightbox-close" onClick={() => setLightbox(null)}>&times;</button>
                   <img
-                    src={`https://picsum.photos/seed/sw${lightbox.id}/900/${Math.round(lightbox.h * 2.25)}`}
+                    src={lightbox.url ? lightbox.url.replace('w=600', 'w=1200') : `https://picsum.photos/seed/sw${lightbox.id}/900/${Math.round(lightbox.h * 2.25)}`}
                     alt={lightbox.label}
                   />
                   <div className="lightbox-caption">
@@ -548,6 +621,52 @@ export default function ClientPortal() {
           </div>
         )}
       </div>
+
+      {/* Change Order Modal */}
+      {showCOForm && (
+        <div className="client-modal-overlay" onClick={() => setShowCOForm(false)}>
+          <div className="client-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="client-modal-close" onClick={() => setShowCOForm(false)}>&times;</button>
+            <h3>Submit a Change Order</h3>
+            <p className="client-modal-sub">Describe the change you'd like to make. Your project team will review and respond.</p>
+            <form onSubmit={handleSubmitCO} className="client-co-form">
+              <div className="client-co-field">
+                <label>What would you like to change?</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Upgrade kitchen backsplash to herringbone tile"
+                  value={coForm.title}
+                  onChange={(e) => setCOForm({ ...coForm, title: e.target.value })}
+                  required
+                  autoFocus
+                />
+              </div>
+              <div className="client-co-field">
+                <label>Details (optional)</label>
+                <textarea
+                  placeholder="Any specific materials, brands, or references..."
+                  value={coForm.description}
+                  onChange={(e) => setCOForm({ ...coForm, description: e.target.value })}
+                  rows={3}
+                />
+              </div>
+              <div className="client-co-field">
+                <label>Estimated Budget (optional)</label>
+                <input
+                  type="number"
+                  placeholder="$"
+                  value={coForm.estimatedCost}
+                  onChange={(e) => setCOForm({ ...coForm, estimatedCost: e.target.value })}
+                />
+              </div>
+              <div className="client-co-actions">
+                <button type="button" className="client-co-cancel" onClick={() => setShowCOForm(false)}>Cancel</button>
+                <button type="submit" className="client-co-submit">Submit Request</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Toast */}
       {toast && (

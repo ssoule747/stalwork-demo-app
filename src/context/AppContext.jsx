@@ -82,6 +82,13 @@ export function AppProvider({ children }) {
     });
   }, []);
 
+  const addChangeOrder = useCallback((co) => {
+    setState((prev) => ({
+      ...prev,
+      changeOrders: [{ ...co, id: prev.changeOrders.length + 1 }, ...prev.changeOrders],
+    }));
+  }, []);
+
   const updateChangeOrderStatus = useCallback((coId, newStatus) => {
     setState((prev) => ({
       ...prev,
@@ -107,7 +114,7 @@ export function AppProvider({ children }) {
     currentUser, users,
     ...state,
     login, logout, switchRole,
-    addDailyLog, addPhoto, addWeeklyReport,
+    addDailyLog, addPhoto, addWeeklyReport, addChangeOrder,
     updatePhaseStatus, updateChangeOrderStatus, updateScheduleCell,
   };
 

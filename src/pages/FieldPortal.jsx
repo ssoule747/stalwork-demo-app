@@ -555,7 +555,7 @@ function FieldPhotoGrid({ projectId }) {
         <div key={photo.id} className="field-photo-card">
           {photo.isNew && <span className="field-photo-new">New</span>}
           <img
-            src={`https://picsum.photos/seed/sw${photo.id}/400/${photo.h}`}
+            src={photo.url || `https://picsum.photos/seed/sw${photo.id}/400/${photo.h}`}
             alt={photo.label}
             loading="lazy"
           />

@@ -2538,6 +2538,176 @@ tr:hover td {
 }
 
 /* ============================================
+   CLIENT PORTAL — QUICK ACTIONS
+   ============================================ */
+.client-actions-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.client-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+}
+.client-action-card:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  background: rgba(198, 165, 90, 0.06);
+}
+.client-action-icon { color: var(--accent-gold); }
+
+/* ============================================
+   CLIENT PORTAL — PENDING CHANGE ORDERS
+   ============================================ */
+.client-pending-co { margin-bottom: 20px; }
+.client-pending-co h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+.client-co-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.client-co-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.client-co-title { font-size: 13px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.client-co-meta { font-size: 11px; color: var(--text-muted); }
+
+/* ============================================
+   CLIENT PORTAL — CHANGE ORDER MODAL
+   ============================================ */
+.client-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.client-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 480px;
+  padding: 28px 24px 24px;
+  position: relative;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.client-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+.client-modal-close:hover { color: var(--text-primary); }
+.client-modal h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.client-modal-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.client-co-form { display: flex; flex-direction: column; gap: 14px; }
+.client-co-field { display: flex; flex-direction: column; gap: 5px; }
+.client-co-field label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.client-co-field input,
+.client-co-field textarea {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.client-co-field input:focus,
+.client-co-field textarea:focus {
+  border-color: var(--accent-gold);
+}
+.client-co-field textarea { resize: vertical; min-height: 60px; }
+.client-co-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+.client-co-cancel {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.client-co-cancel:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.client-co-submit {
+  flex: 1;
+  padding: 10px;
+  background: var(--accent-gold);
+  border: none;
+  border-radius: 8px;
+  color: #111;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.client-co-submit:hover { filter: brightness(1.1); }
+
+/* ============================================
    CLIENT PORTAL — TOAST
    ============================================ */
 .client-toast {
